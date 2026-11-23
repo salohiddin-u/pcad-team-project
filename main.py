@@ -105,3 +105,40 @@ def show_vehicles():
     if not vehicles:
         return "No vehicles yet."
     return "\n\n".join(str(v) for v in vehicles.values())
+
+
+menu = """\nLogistics Management\n
+1. Load shipment\n
+2. Change shipment status\n
+3. All shipments\n
+4. Show all vehicles\n
+5. Add vehicle\n
+6. Warehouses\n
+7. Change vehicle status\n
+8. Calculate cost\n
+0. Exit\n
+>>> """
+
+
+while True:
+    choice = ask_int(menu)
+
+    if choice == 1:
+        pass
+    elif choice == 2:
+        pass
+    elif choice == 3:
+        pass
+    elif choice == 4:
+        print(show_vehicles())
+    elif choice == 5:
+        print(add_vehicle())
+    elif choice == 6:
+        print(show_warehouses())
+    elif choice == 7:
+        print(change_status())
+    elif choice == 8:
+        print(calculate_cost())
+    elif choice == 0:
+        print("Exiting the program.")
+        break
