@@ -89,6 +89,7 @@ def add_vehicle():
 
 def change_status():
     vehicle = find_vehicle("Enter vehicle ID: ")
+    print(f"Current status of {vehicle.label} #{vehicle.vehicle_id}: {vehicle.status}")
     new_status = valid_status("Select status of vehicle:\n1. Available\n2. Loaded\n3. On road\n>>> ")
     return vehicle.change_status(new_status)
 
@@ -111,12 +112,13 @@ menu = """\nLogistics Management\n
 1. Load shipment\n
 2. Change shipment status\n
 3. All shipments\n
-4. Show all vehicles\n
-5. Add vehicle\n
-6. Warehouses\n
-7. Change vehicle status\n
-8. Calculate cost\n
-0. Exit\n
+4. Change vehicle status\n
+5. Calculate cost\n
+6. Show all vehicles\n
+7. Add vehicle\n
+8. Warehouses\n
+9. Add warehouse\n
+10. Exit\n
 >>> """
 
 
@@ -130,15 +132,17 @@ while True:
     elif choice == 3:
         pass
     elif choice == 4:
-        print(show_vehicles())
-    elif choice == 5:
-        print(add_vehicle())
-    elif choice == 6:
-        print(show_warehouses())
-    elif choice == 7:
         print(change_status())
-    elif choice == 8:
+    elif choice == 5:
         print(calculate_cost())
-    elif choice == 0:
+    elif choice == 6:
+        print(show_vehicles())
+    elif choice == 7:
+        print(add_vehicle())
+    elif choice == 8:
+        print(show_warehouses())
+    elif choice == 9:
+        print(add_warehouse())
+    elif choice == 10:
         print("Exiting the program.")
         break
