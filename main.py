@@ -28,3 +28,8 @@ def add_warehouse():
     warehouse = Warehouse(warehouse_id, name, capacity, current_load)
     warehouses[warehouse_id] = warehouse
     return warehouse
+
+def show_warehouses():
+    if not warehouses:
+        return "No warehouses yet."
+    return "\n\n".join(str(w) for w in warehouses.values())
