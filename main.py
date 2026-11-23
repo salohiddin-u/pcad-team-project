@@ -1,5 +1,27 @@
 statuses = {1: "Available", 2: "Loaded", 3: "On road"}
 
+def ask_int(a):
+    while True:
+        value = input(a)
+        if value.isdigit() and int(value) > 0:
+            return int(value)
+        print("Please enter a positive whole number.")
+
+
+class Warehouse:
+    def __init__(self, warehouse_id, name, capacity, current_load):
+        self.warehouse_id = warehouse_id
+        self.name = name
+        self.capacity = capacity
+        self.current_load = current_load
+
+
+    def load_info(self):
+        return f"{self.name} can hold more {self.capacity-self.current_load} t shipments"
+
+    def __str__(self):
+        return f"Warehouse #{self.warehouse_id}\nName: {self.name}\nCapacity: {self.capacity} shipments\nCurrent load: {self.current_load}"
+
 
 class Vehicle:
     rate = 100
@@ -42,12 +64,28 @@ vehicles = {
     6: Van(6, 5, statuses[1], 500),
 }
 
-def ask_int(a):
-    while True:
-        value = input(a)
-        if value.isdigit() and int(value) > 0:
-            return int(value)
-        print("Please enter a positive whole number.")
+warehouses = {
+    1: Warehouse(1, "Tashkent", 500, 120),
+    2: Warehouse(2, "Fergana", 300, 300),
+    3: Warehouse(3, "Samarkand", 450, 0),
+}
+
+def add_warehouse():
+    warehouse_id = ask_int("Enter warehouse ID: ")
+    while warehouse_id in warehouses:
+        print(f"Warehouse with ID {warehouse_id} is available.")
+        warehouse_id = ask_int("Enter warehouse ID: ")
+    name = input("Enter warehouse name: ")
+    capacity = ask_int("Enter capacity: ")
+    current_load = 0
+    warehouse = Warehouse(warehouse_id, name, capacity, current_load)
+    warehouses[warehouse_id] = warehouse
+    return warehouse
+
+def show_warehouses():
+    if not warehouses:
+        return "No warehouses yet."
+    return "\n\n".join(str(w) for w in warehouses.values())
 
 def find_vehicle(vehicle_id):
     vehicle_id = ask_int(vehicle_id)
