@@ -5,8 +5,9 @@ class Warehouse:
         self.capacity = capacity
         self.current_load = current_load
 
-    def load_info(self, capacity, current_load, name):
-        return f"{name} can hold more {capacity-current_load} t shipments"
+
+    def load_info(self):
+        return f"{self.name} can hold more {self.capacity-self.current_load} t shipments"
 
     def __str__(self):
         return f"Warehouse #{self.warehouse_id}\nName: {self.name}\nCapacity: {self.capacity} shipments\nCurrent load: {self.current_load}"
@@ -19,7 +20,7 @@ warehouses = {
 
 def add_warehouse():
     warehouse_id = ask_int("Enter warehouse ID: ")
-    while not warehouse_id in warehouses:
+    while warehouse_id in warehouses:
         print(f"Warehouse with ID {warehouse_id} is available.")
         warehouse_id = ask_int("Enter warehouse ID: ")
     name = input("Enter warehouse name: ")
