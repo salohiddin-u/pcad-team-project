@@ -1,4 +1,4 @@
-# Logistics Management System
+ # Logistics Management System
 
 A console program for a logistics company. It manages shipments, vehicles
 and warehouses, and calculates the delivery cost.
@@ -8,6 +8,7 @@ Team project for the PCAD course. Language: Python.
 ## Team
 
 | Name | Part of the project |
+|------|---------------------|
 | (name 1) | Vehicle classes (Vehicle, Truck, Van) |
 | (name 2) | Shipment class and cost calculation |
 | (name 3) | Warehouse class and main menu |
@@ -77,8 +78,7 @@ Enter distance: 200
 
 ## Known limitations
 
-- Numbers must be entered as digits. Entering letters where a decimal
-  number is expected (weight) stops the program.
+- Entering letters where a decimal number is expected (weight) stops the program.
 - Data is stored only while the program is running.
 
 ## Possible improvements
