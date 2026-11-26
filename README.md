@@ -9,9 +9,9 @@ Team project for the PCAD course. Language: Python.
 
 | Name | Part of the project |
 |------|---------------------|
-| (name 1) | Vehicle classes (Vehicle, Truck, Van) |
-| (name 2) | Shipment class and cost calculation |
-| (name 3) | Warehouse class and main menu |
+| Salohiddin Usmonaliyev| Vehicle classes (Vehicle, Truck, Van) |
+| Muxammad Maxmudov| Shipment class and cost calculation |
+| Muxammad Asilov| Warehouse class and main menu |
 
 ## How to run
 
