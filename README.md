@@ -75,13 +75,3 @@ Enter vehicle ID: 1
 Enter distance: 200
 50000
 ```
-
-## Known limitations
-
-- Entering letters where a decimal number is expected (weight) stops the program.
-- Data is stored only while the program is running.
-
-## Possible improvements
-
-- Save data to a file.
-- Add a new vehicle type (for example Scooter).
