@@ -11,7 +11,7 @@ def ask_int(a):
 def ask_float(a):
     while True:
         value = input(a)
-        if isinstance(value, float) and value > 0:
+        if isinstance(float(value), float) and float(value) > 0:
             return float(value)
         print("Please enter a positive number (for example 0.5)")
 
@@ -83,31 +83,31 @@ class Shipment:
 
     def __str__(self):
         if self.vehicle is None:
-            vehicle_text = "Vehicle: not loaded yet"
-            cost_text = "Cost: not calculated yet"
-        else:
-            vehicle_text = f"{self.vehicle.label} ID: {self.vehicle.vehicle_id}"
-            cost_text = f"Cost: {self.cost}"
-        return f"Shipment #{self.shipment_id}\nWeight: {self.weight} tonne\nDistance: {self.distance} km\nWarehouse: {self.warehouse.name}\n{vehicle_text}\n{cost_text}\nStatus: {self.status}"
+            return f"Shipment #{self.shipment_id}\nWeight: {self.weight} tonne\nDistance: {self.distance} km\nWarehouse: {self.warehouse.name}\nVehicle: Not loaded yet\n{self.cost}\nStatus: {self.status}"    
+        return f"Shipment #{self.shipment_id}\nWeight: {self.weight} tonne\nDistance: {self.distance} km\nWarehouse: {self.warehouse.name}\n{self.vehicle.label} ID: {self.vehicle.vehicle_id}\n{self.cost}\nStatus: {self.status}"
 
 vehicle_types = {1: Truck, 2: Van}
 
 vehicles = {
-    1: Vehicle(1, 5, vehicle_statuses[1], 500),
-    2: Vehicle(2, 10, vehicle_statuses[1], 800),
-    3: Truck(3, 20, vehicle_statuses[2], 1200),
-    4: Vehicle(4, 8, vehicle_statuses[3], 650),
-    5: Truck(5, 15, vehicle_statuses[1], 1000),
-    6: Van(6, 5, vehicle_statuses[1], 500),
+    1: Truck(1, 20, vehicle_statuses[3], 1200),
+    2: Truck(2, 15, vehicle_statuses[2], 1000),
+    3: Truck(3, 10, vehicle_statuses[1], 800),
+    4: Van(4, 5, vehicle_statuses[1], 500),
+    5: Van(5, 3, vehicle_statuses[1], 400),
 }
 
 warehouses = {
-    1: Warehouse(1, "Tashkent", 500, 120),
-    2: Warehouse(2, "Fergana", 300, 300),
-    3: Warehouse(3, "Samarkand", 450, 0),
+    1: Warehouse(1, "Tashkent", 100, 18),
+    2: Warehouse(2, "Fergana", 50, 0),
+    3: Warehouse(3, "Samarkand", 80, 8),
 }
 
-shipments = {}
+shipments = {
+    1: Shipment(1, 12, 200, warehouses[1], vehicles[1], 50000, shipment_status[2]),
+    2: Shipment(2, 8, 300, warehouses[3], vehicles[2], 75000, shipment_status[1]),
+    3: Shipment(3, 3, 150, warehouses[2], vehicles[4], 22500, shipment_status[3]),
+    4: Shipment(4, 6, 100, warehouses[1], None, 0, shipment_status[1]),
+}
 
 def add_warehouse():
     warehouse_id = ask_int("Enter warehouse ID: ")
@@ -206,9 +206,9 @@ def load_shipment():
     if vehicle.status != vehicle_statuses[1]:
         return f"{vehicle.label} #{vehicle.vehicle_id} is not available (status: {vehicle.status})"
     if shipment.weight > vehicle.capacity:
-        return f"Weight {shipment.weight} tonne exceeds the vehicle capacity ({vehicle.capacity} tonne)"
+        return f"Weight {shipment.weight} tonne exceeds the vehicle's capacity ({vehicle.capacity} tonne)"
     if shipment.distance > vehicle.max_distance:
-        return f"Distance {shipment.distance} km exceeds the vehicle max distance ({vehicle.max_distance} km)"
+        return f"Distance {shipment.distance} km exceeds the vehicle's max distance ({vehicle.max_distance} km)"
 
     shipment.vehicle = vehicle
     shipment.cost = vehicle.calculate_cost(shipment.distance)
