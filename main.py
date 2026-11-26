@@ -280,3 +280,5 @@ while True:
     elif choice == 10:
         print("Exiting the program")
         break
+    else:
+        print("Invalid choice. Choose from 1 to 10")
