@@ -8,6 +8,13 @@ def ask_int(a):
             return int(value)
         print("Please enter a positive whole number")
 
+def ask_float(a):
+    while True:
+        value = input(a)
+        if isinstance(value, float) and value > 0:
+            return float(value)
+        print("Please enter a positive number (for example 0.5)")
+
 def ask_choice(a, options):
     choice = ask_int(a)
     while choice not in options:
@@ -23,12 +30,8 @@ class Warehouse:
         self.capacity = capacity
         self.current_load = current_load
 
-
-    def load_info(self):
-        return f"{self.name} can hold more {self.capacity-self.current_load} t shipments"
-
     def __str__(self):
-        return f"Warehouse #{self.warehouse_id}\nName: {self.name}\nCapacity: {self.capacity} shipments\nCurrent load: {self.current_load}"
+        return f"Warehouse #{self.warehouse_id}\nName: {self.name}\nCapacity: {self.capacity} tonne\nCurrent load: {self.current_load} tonne"
 
 
 class Vehicle:
@@ -79,7 +82,13 @@ class Shipment:
         return f"Shipment #{self.shipment_id} status changed to {self.status}"
 
     def __str__(self):
-        return f"Shipment #{self.shipment_id}\nWeight: {self.weight} tonne\nDistance: {self.distance} km\nWarehouse: {self.warehouse.name}\n{self.vehicle.label} ID: {self.vehicle.vehicle_id}\nCost: {self.cost}\nStatus: {self.status}"
+        if self.vehicle is None:
+            vehicle_text = "Vehicle: not loaded yet"
+            cost_text = "Cost: not calculated yet"
+        else:
+            vehicle_text = f"{self.vehicle.label} ID: {self.vehicle.vehicle_id}"
+            cost_text = f"Cost: {self.cost}"
+        return f"Shipment #{self.shipment_id}\nWeight: {self.weight} tonne\nDistance: {self.distance} km\nWarehouse: {self.warehouse.name}\n{vehicle_text}\n{cost_text}\nStatus: {self.status}"
 
 vehicle_types = {1: Truck, 2: Van}
 
@@ -103,10 +112,10 @@ shipments = {}
 def add_warehouse():
     warehouse_id = ask_int("Enter warehouse ID: ")
     while warehouse_id in warehouses:
-        print(f"Warehouse with ID {warehouse_id} is available")
+        print(f"Warehouse with ID {warehouse_id} already exists")
         warehouse_id = ask_int("Enter warehouse ID: ")
     name = input("Enter warehouse name: ")
-    capacity = ask_int("Enter capacity: ")
+    capacity = ask_int("Enter capacity (tonne): ")
     current_load = 0
     warehouse = Warehouse(warehouse_id, name, capacity, current_load)
     warehouses[warehouse_id] = warehouse
@@ -136,19 +145,13 @@ def add_vehicle():
             break
         print(f"Vehicle ID {vehicle_id} already exists")
         
-    capacity = ask_int("Enter the capacity of the vehicle: ")
+    capacity = ask_int("Enter the capacity of the vehicle (tonne): ")
 
     max_distance = ask_int("Enter max distance: ")
  
     vehicle = vehicle_type(vehicle_id, capacity, vehicle_statuses[1], max_distance)
     vehicles[vehicle_id] = vehicle
     return vehicle
-
-def change_status():
-    vehicle = find_vehicle("Enter vehicle ID: ")
-    print(f"Current status of {vehicle.label} #{vehicle.vehicle_id}: {vehicle.status}")
-    new_status = ask_choice("Select status of vehicle:\n1. Available\n2. Loaded\n3. On road\n>>> ", vehicle_statuses)
-    return vehicle.change_status(new_status)
 
 def calculate_cost():
     vehicle = find_vehicle("Enter vehicle ID: ")
@@ -176,40 +179,47 @@ def find_shipment(text):
         shipment_id = ask_int(f"Shipment #{shipment_id} is not found\nEnter a valid ID: ")
     return shipments[shipment_id]
 
-def load_shipment():
+def add_shipment():
     shipment_id = ask_int("Enter shipment ID: ")
     while shipment_id in shipments:
         print(f"Shipment with ID {shipment_id} already exists")
         shipment_id = ask_int("Enter shipment ID: ")
 
     warehouse = find_warehouse("Enter warehouse ID: ")
-    if warehouse.capacity - warehouse.current_load <= 0:
-        return f"Warehouse {warehouse.name} is full"
+    weight = ask_float("Enter weight (tonne): ")
+    if warehouse.capacity - warehouse.current_load < weight:
+        return f"Warehouse {warehouse.name} does not have enough space ({warehouse.capacity - warehouse.current_load} tonne left)"
+
+    distance = ask_int("Enter distance: ")
+
+    shipment = Shipment(shipment_id, weight, distance, warehouse, None, 0, shipment_status[1])
+    shipments[shipment_id] = shipment
+    warehouse.current_load += weight
+    return shipment
+
+def load_shipment():
+    shipment = find_shipment("Enter shipment ID: ")
+    if shipment.vehicle is not None:
+        return f"Shipment #{shipment.shipment_id} is already loaded into {shipment.vehicle.label} #{shipment.vehicle.vehicle_id}"
 
     vehicle = find_vehicle("Enter vehicle ID: ")
     if vehicle.status != vehicle_statuses[1]:
         return f"{vehicle.label} #{vehicle.vehicle_id} is not available (status: {vehicle.status})"
+    if shipment.weight > vehicle.capacity:
+        return f"Weight {shipment.weight} tonne exceeds the vehicle capacity ({vehicle.capacity} tonne)"
+    if shipment.distance > vehicle.max_distance:
+        return f"Distance {shipment.distance} km exceeds the vehicle max distance ({vehicle.max_distance} km)"
 
-    weight = ask_int("Enter weight (tonne): ")
-    while weight > vehicle.capacity:
-        print(f"Weight must not exceed {vehicle.capacity} tonne")
-        weight = ask_int("Enter weight (tonne): ")
-
-    distance = ask_int("Enter distance: ")
-    while distance > vehicle.max_distance:
-        print(f"Distance must not exceed {vehicle.max_distance} km")
-        distance = ask_int("Enter distance: ")
-
-    cost = vehicle.calculate_cost(distance)
-    shipment = Shipment(shipment_id, weight, distance, warehouse, vehicle, cost, shipment_status[1])
-    shipments[shipment_id] = shipment
-    warehouse.current_load += 1
+    shipment.vehicle = vehicle
+    shipment.cost = vehicle.calculate_cost(shipment.distance)
     vehicle.change_status(vehicle_statuses[2])
     return shipment
 
 def change_shipment_status():
     shipment = find_shipment("Enter shipment ID: ")
     print(f"Current status of shipment #{shipment.shipment_id}: {shipment.status}")
+    if shipment.vehicle is None:
+        return "Shipment is not loaded into a vehicle yet. Load it first"
     if shipment.status == shipment_status[3]:
         return "Delivered shipment cannot be changed"
     new_status = ask_choice("Select status of shipment:\n1. Created\n2. In transit\n3. Delivered\n>>> ", shipment_status)
@@ -223,7 +233,7 @@ def change_shipment_status():
         shipment.vehicle.change_status(vehicle_statuses[3])
     elif new_status == shipment_status[3]:
         shipment.vehicle.change_status(vehicle_statuses[1])
-        shipment.warehouse.current_load -= 1
+        shipment.warehouse.current_load -= shipment.weight
     return result
 
 def show_shipments():
@@ -232,11 +242,11 @@ def show_shipments():
     return "\n\n".join(str(s) for s in shipments.values())
 
 
-menu = """Logistics Management
-1. Load shipment
-2. Change shipment status
-3. All shipments
-4. Change vehicle status
+menu = """\nLogistics Management
+1. Add shipment
+2. Load shipment
+3. Change shipment status
+4. All shipments
 5. Calculate cost
 6. Show all vehicles
 7. Add vehicle
@@ -250,13 +260,13 @@ while True:
     choice = ask_int(menu)
 
     if choice == 1:
-        print(load_shipment())
+        print(add_shipment())
     elif choice == 2:
-        print(change_shipment_status())
+        print(load_shipment())
     elif choice == 3:
-        print(show_shipments())
+        print(change_shipment_status())
     elif choice == 4:
-        print(change_status())
+        print(show_shipments())
     elif choice == 5:
         print(calculate_cost())
     elif choice == 6:
@@ -270,4 +280,3 @@ while True:
     elif choice == 10:
         print("Exiting the program")
         break
-    
