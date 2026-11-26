@@ -8,6 +8,13 @@ def ask_int(a):
             return int(value)
         print("Please enter a positive whole number")
 
+def ask_choice(a, options):
+    choice = ask_int(a)
+    while choice not in options:
+        print(f"Please choose one of: {', '.join(map(str, options))}")
+        choice = ask_int(">>> ")
+    return options[choice]
+
 
 class Warehouse:
     def __init__(self, warehouse_id, name, capacity, current_load):
@@ -116,20 +123,9 @@ def find_vehicle(vehicle_id):
         vehicle_id = ask_int(f"Vehicle #{vehicle_id} is not found\nEnter a valid ID: ")
     return vehicles[vehicle_id]
 
-def valid_status(status):
-    status = ask_int(status)
-    while not status in vehicle_statuses:
-        print("Please choose 1, 2, or 3")
-        status = ask_int(">>> ")
-    return vehicle_statuses[status]
-
 def ask_vehicle_type():
     t = "\n".join(f"{i}. {v.label}" for i, v in vehicle_types.items()) + "\n>>> "
-    choice = ask_int("Select type: \n" + t)
-    while choice not in vehicle_types:
-        print("Please choose 1 or 2")
-        choice = ask_int(">>> ")
-    return vehicle_types[choice]
+    return ask_choice("Select type: \n" + t, vehicle_types)
 
 def add_vehicle():
     vehicle_type = ask_vehicle_type()
@@ -151,7 +147,7 @@ def add_vehicle():
 def change_status():
     vehicle = find_vehicle("Enter vehicle ID: ")
     print(f"Current status of {vehicle.label} #{vehicle.vehicle_id}: {vehicle.status}")
-    new_status = valid_status("Select status of vehicle:\n1. Available\n2. Loaded\n3. On road\n>>> ")
+    new_status = ask_choice("Select status of vehicle:\n1. Available\n2. Loaded\n3. On road\n>>> ", vehicle_statuses)
     return vehicle.change_status(new_status)
 
 def calculate_cost():
@@ -179,13 +175,6 @@ def find_shipment(text):
     while shipment_id not in shipments:
         shipment_id = ask_int(f"Shipment #{shipment_id} is not found\nEnter a valid ID: ")
     return shipments[shipment_id]
-
-def valid_shipment_status(text):
-    status = ask_int(text)
-    while not status in shipment_status:
-        print("Please choose 1, 2, or 3")
-        status = ask_int(">>> ")
-    return shipment_status[status]
 
 def load_shipment():
     shipment_id = ask_int("Enter shipment ID: ")
@@ -223,7 +212,7 @@ def change_shipment_status():
     print(f"Current status of shipment #{shipment.shipment_id}: {shipment.status}")
     if shipment.status == shipment_status[3]:
         return "Delivered shipment cannot be changed"
-    new_status = valid_shipment_status("Select status of shipment:\n1. Created\n2. In transit\n3. Delivered\n>>> ")
+    new_status = ask_choice("Select status of shipment:\n1. Created\n2. In transit\n3. Delivered\n>>> ", shipment_status)
     if new_status == shipment.status:
         return shipment.change_status(new_status)
     result = shipment.change_status(new_status)
@@ -243,7 +232,7 @@ def show_shipments():
     return "\n\n".join(str(s) for s in shipments.values())
 
 
-menu = """\nLogistics Management
+menu = """Logistics Management
 1. Load shipment
 2. Change shipment status
 3. All shipments
@@ -281,3 +270,4 @@ while True:
     elif choice == 10:
         print("Exiting the program")
         break
+    
