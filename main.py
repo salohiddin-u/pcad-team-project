@@ -64,6 +64,19 @@ class Van(Vehicle):
     rate = 150
     label = "Van"
 
+    def __init__(self, vehicle_id, capacity, status, max_distance, refrigerated=False):
+        super().__init__(vehicle_id, capacity, status, max_distance)
+        self.refrigerated = refrigerated
+
+    def calculate_cost(self, distance):
+        cost = super().calculate_cost(distance)
+        if self.refrigerated:
+            cost *= 1.2
+        return cost
+
+    def __str__(self):
+        return super().__str__() + f"\nRefrigerated: {'Yes' if self.refrigerated else 'No'}"
+
 
 class Shipment:
     def __init__(self, shipment_id, weight, distance, warehouse, vehicle, cost, status):
